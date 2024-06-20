@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<!-- 製作Cookies -->
+<!-- 配合brad62.jsp -->
+	<head>
+		<meta charset="UTF-8">
+		<title>Insert title here</title>
+		<script type="text/javascript">
+			window.onload=function(){
+				
+				//呼叫尋訪key方法
+				var aryCookies = {};
+				
+				//先呼叫
+				parseCookie();
+				//將用戶端Cookie資料撈取出來
+				function parseCookie(){
+					//再定義
+					var cookie = document.cookie;
+					console.log(cookie);
+					//將所有Cookie字串切割 split 放入有很多的Cookie
+					var cookies = cookie.split(";");	// []
+					//尋訪很多的的Cookie
+					cookies.forEach(function(item, i){
+						console.log(item);
+						item = item.trim().split("=");
+						
+						aryCookies[item[0].trim()] = item[1];
+						console.log("debug:" + item[0] + ":" + item[1]);
+					});
+					
+				}
+				
+			
+			//取的KEY 方法
+			function getCookie(key){
+					return aryCookies[key];
+				}
+			
+			//判斷有帳號就將value丟進去
+			if (getCookie('account')){
+					document.getElementById('account').value = getCookie('account'); 
+				}
+				if (getCookie('passwd')){
+					document.getElementById('passwd').value = getCookie('passwd'); 
+				}
+				if (getCookie('remember')){
+					document.getElementById('remember').checked = getCookie('remember'); 
+				}	
+			}
+			
+			//處理送出按鈕beforeSubmit開關
+			function beforeSubmit(){
+				//要把Cookie寫在這裡
+				//抓取前端各項ID
+				let account = document.getElementById("account").value;
+				let passwd = document.getElementById("passwd").value;
+				let isRemember = document.getElementById("remember").checked;
+				//判斷有勾選要記住我是否有沒有勾起來
+				if (isRemember){
+					//如果有勾起來 KEY=自己決定 加上 value = 抓取的值
+					document.cookie = "account = " + account;
+					document.cookie = "passwd = " + passwd;
+					document.cookie = "remember = " + isRemember;
+				}else{
+					//如果沒有勾起來就做清除
+					var cookies = document.cookie.split(";");
+					//用迴圈尋訪裡面所有的值
+					for (var i=0; i<cookies.length; i++){
+						//將有尋訪到的值用＝號切割成陣列 
+						var setting = cookies[i].split("=");
+						//使Cookie與時
+						document.cookie = setting[0].trim() + " = ;expires = Thu, 01 Jan 1970 00:00:00 UTC"; 
+					}
+					document.cookie = "remember = false";
+				}
+				
+				return true;
+			}	
+			
+	
+		
+		</script>
+	</head>
+	<body>
+		<form action="brad62.jsp" onsubmit="return beforeSubmit();">
+			Account: <input name="account" id="account" /><br />
+			Password: <input name="passwd" id="passwd" /><br />
+			<input type="checkbox" id="remember" /> Remember Me<br />
+			<input type="submit" value="Login" />
+		</form>
+		
+		</form>
+	</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Insert title here</title>
+		<!-- 插入ＪＱ來源 -->
+		<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+		
+		
+		<script type="text/javascript">
+		/* ＪＱ 觸發點擊會做什麼事 */
+		function test1(){
+			/* 會直接導入Brad56 並接收參數 */
+				$('#id1').load('brad56.jsp?max=' + $('#max').val());
+			}
+			/* 製作第二個點擊觸發事件 */
+			function test2(){
+				/* get(跟這個ＵＲＬ,回呼回來觸發方法) */
+				/* function(資料,狀態   status=成功） */
+				$.get('brad56.jsp?max=' + $('#max').val(), function(data, status){
+					/* 判斷如果status成功會做什麼事  */
+					if (status == 'success'){
+						$('#id1').html(data);
+					}
+				});
+			}
+			/* 製作第三個點擊觸發事件 */
+			function test3(){
+				/* post(url ,參數會獨立出來變成物件, 回呼回來觸發方法） */
+				$.post('brad56.jsp', {
+					"max" : $('#max').val()
+				}, function(data, status){
+					if (status == 'success'){
+						$('#id1').html(data);
+					}					
+				});
+			}
+			/* 設定第四個點擊方法並搭配AJAX */
+			function test4(){
+				/* AJAX({只塞物件}) */
+				$.ajax({
+					url: 'brad56.jsp',
+					/* 傳遞方式 */
+					method: 'post',
+					/* 如果是post  你就要加上data */
+					data: {
+						max : $('#max').val()
+					},
+					/* 狀態成功回傳 觸發方法 */
+					success: function(data){
+						$('#id1').html(data);
+					},
+					/* 因為data再傳的時候是json格式 所以要告訴後端轉回UTF-8 */
+					
+					
+					/* 若上訴方法無法成功 可以用另外一個方法 dataType: text*/
+				});
+			}
+			
+		
+		</script>
+	
+		
+	
+	</head>
+	<body>
+		Lottery: <span id="id1"></span><br />
+		<!-- 製作一個讓使用者自訂亂數最大值 並讓他傳遞參數 -->
+		Max: <input type="number" id="max" /><br />
+		<!-- 製作一個按鈕並搭配觸發事件 -->
+		<input type="button" onclick="test1()" value="Test1" /><br />
+		<input type="button" onclick="test2()" value="Test2" /><br />
+		<input type="button" onclick="test3()" value="Test3" /><br />
+		
+		<input type="button" onclick="test4()" value="Test4" /><br />
+		
+		
+		
+	</body>
+</html>

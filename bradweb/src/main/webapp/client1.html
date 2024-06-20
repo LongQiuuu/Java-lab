@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+
+<!-- 製作同步簽名板 -->
+<!-- 這檔案用來畫圖 -->
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Insert title here</title>
+		<script >
+			//變數宣告在外
+			let canvas, ctx;
+			window.onload = function(){
+				
+				//製作連線
+				//建出webSocket （帶字串 ws=通訊協定 / 伺服器 /名稱 ） 
+				let webSocket = new WebSocket("ws://localhost:8080/bradweb/mycenter");
+				
+				//出現錯誤觸發方法
+				webSocket.onerror = function(){
+					console.log("ERROR");
+				};
+				
+				//連線觸動方法
+				webSocket.onopen = function(){
+					console.log("OPEN");
+					let message = {
+							init:true
+					};
+					webSocket.send(JSON.stringify(message));					
+				};
+				//關閉觸發方法
+				webSocket.onclose = function(){
+					console.log("CLOSE");
+					
+				};
+				//傳送訊息觸發方法
+				webSocket.onmessage = function(event){
+				};	
+				
+				//製作畫圖
+				//取的元件
+				canvas = document.getElementById("myDrawer");
+				//將取得的元件進行繪製
+				ctx = canvas.getContext("2d");
+				
+				//開始畫
+				ctx.beginPath();
+				//設定線的寬度
+				ctx.lineWidth = 4;
+				
+				//畫的起點 設定
+				//ctx.moveTo(0,0);
+				//設定另外一個點
+				//ctx.lineTo(200,100);
+				//畫出來
+				//ctx.stroke();
+				
+				
+				
+				//滑鼠點擊觸發方法
+				let isDrag = false;
+				canvas.onmousedown = function(evt){
+					let x = evt.offsetX, y = evt.offsetY;
+					isDrag = true; 
+					ctx.moveTo(x,y);
+					//console.log("down:" + x + " x " + y);
+					
+					let message = {
+						init : false,
+						isClear : false,
+						isNewLine : true,
+						x : x,
+						y : y
+						
+					};
+					webSocket.send(JSON.stringify(message));					
+					
+				};
+				
+				//滑鼠移動觸發方法
+				canvas.onmousemove = function(evt){
+					//console.log(evt.clientX + ":" + evt.offsetX);
+					
+					if (isDrag){
+						let x = evt.offsetX, y = evt.offsetY;
+						ctx.lineTo(x, y);
+						ctx.stroke();
+						//console.log("move:" + x + " x " + y);
+						
+						let message = {
+							init : false,
+							isClear : false,
+							isNewLine : false,
+							x : x,
+							y : y							
+						};
+						webSocket.send(JSON.stringify(message));					
+						
+					}
+				};
+				
+				//滑鼠點擊放掉觸發方法
+				canvas.onmouseup = function(evt){
+					isDrag = false;
+				}
+				
+				//清除畫面
+				//抓取清除按鈕
+				clear = document.getElementById("clear");
+				clear.onclick = function(){
+					//全畫面清除
+					ctx.clearRect(0,0,canvas.width, canvas.height);
+					//再重新畫出
+					ctx.beginPath();
+					let message = {
+							init : false,
+							isClear : true,
+							isNewLine : false,
+							//將x y歸零
+							y:0,
+							x:0
+						};
+						webSocket.send(JSON.stringify(message));						
+					
+				};
+			
+				
+				
+			}
+		
+		</script>
+	</head>
+	<body>
+		<button id="clear">Clear</button>
+		<hr />
+		<canvas id="myDrawer" width="640px" height="480px" style="border:1px solid #000;"></canvas>
+	</body>
+</html>

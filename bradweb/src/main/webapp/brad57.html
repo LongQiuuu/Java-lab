@@ -1,0 +1,60 @@
+
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Insert title here</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	
+	<script >
+	
+		function search(){
+			console.log("OK");
+			/* $.get(url, function(data,statue)) */
+			$.get('brad58.jsp?orderId=' + $('#orderId').val(), function(data, status){
+				console.log(data);
+				if (status == 'success'){
+					
+					/* 將拿到的資料寫上網頁 */
+					console.log(data)
+						$('#oid').html(data.orderId);
+						$('#cid').html(data.customerId);
+						$('#date').html(data.date);
+						$('#table').empty();
+					
+					
+					
+					/* 再將拿到的資料 帶入html表格屬性 */
+						$(data.details).each(function(i, row){
+							$('#table').append(
+								'<tr>' + 
+									/* 前面的欄位 */
+									'<td>' + (i+1) + '</td>' + 
+									'<td>' + row.productId + '</td>' + 
+									'<td>' + row.productName + '</td>' + 
+									'<td>' + row.quantity + '</td>' + 
+									'<td>' + row.unitPrice + '</td>' + 
+									/* 小計 */
+									'<td>' + (row.unitPrice*row.quantity )+ '</td>' +
+								'</tr>'
+							);
+						});
+				}
+			});				
+		}
+	
+	</script>
+	
+	</head>
+	<body>
+		OrderID: <input type="text" id="orderId" />
+		<input type="button" onclick="search()" value="Search" />
+		<hr />
+		OrderId: <span id="oid"></span><br />
+		CustomerId: <span id="cid"></span><br />
+		Date: <span id="date"></span><br />
+		<table id="table" width="100%" border="1"></table>
+		
+	</body>
+</html>

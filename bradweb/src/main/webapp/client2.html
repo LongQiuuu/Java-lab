@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<!-- 製作同步簽名板 -->
+<!-- 這檔案用來只接收畫布-->
+
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Insert title here</title>
+		<script>
+			let canvas, ctx;
+			window.onload = function(){
+				
+				let webSocket = new WebSocket("ws://localhost:8080/bradweb/mycenter");
+				webSocket.onerror = function(){
+					console.log("ERROR");
+				};
+				
+				webSocket.onopen = function(){
+					console.log("OPEN");
+				};
+				webSocket.onclose = function(){
+					console.log("CLOSE");
+					
+				};
+				
+				//接收訊息過來
+				webSocket.onmessage = function(event){
+					//變成物件
+					let mesgObj = JSON.parse(event.data);
+					if (mesgObj.isClear){
+						clear();						
+					}else{
+						//呼叫裡面x,y
+						if (mesgObj.isNewLine){
+							moveTo(mesgObj.x, mesgObj.y);
+						}else{
+							drawLine(mesgObj.x, mesgObj.y);
+						}
+					}
+	
+				};				
+				
+				
+				
+				canvas = document.getElementById("myDrawer");
+				ctx = canvas.getContext("2d");
+				
+				
+				
+				function moveTo(x,y){
+					ctx.beginPath();
+					ctx.lineWidth = 4;
+					ctx.moveTo(x,y);
+				}	
+				
+				function drawLine(x,y){
+					ctx.lineTo(x, y);
+					ctx.stroke();					
+				}
+				
+				//清除按鈕
+				function clear(){
+					ctx.clearRect(0,0,canvas.width, canvas.height);
+				}
+				
+				
+				
+			}
+		</script>
+	</head>
+	<body>
+	<canvas id="myDrawer" width="640px" height="480px" style="border:1px solid #000;"></canvas>
+	</body>
+</html>
